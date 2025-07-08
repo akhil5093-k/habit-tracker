@@ -24,6 +24,8 @@ export const useHabits = (userId: string | undefined) => {
       return;
     }
 
+    setLoading(true);
+    
     const q = query(
       collection(db, 'habits'),
       where('userId', '==', userId)
@@ -44,6 +46,10 @@ export const useHabits = (userId: string | undefined) => {
 
       setHabits(habitsData);
       setLoading(false);
+    }, (error) => {
+      console.error('Error fetching habits:', error);
+      setLoading(false);
+      toast.error('Failed to load habits');
     });
 
     return unsubscribe;
