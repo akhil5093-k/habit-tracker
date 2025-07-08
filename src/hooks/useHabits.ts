@@ -3,11 +3,14 @@ import {
   collection,
   query,
   where,
+  orderBy,
   onSnapshot,
   addDoc,
   updateDoc,
   deleteDoc,
   doc,
+  enableNetwork,
+  disableNetwork,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Habit } from '../types/habit';
@@ -24,33 +27,39 @@ export const useHabits = (userId: string | undefined) => {
       return;
     }
 
-    setLoading(true);
-    
+    // Enable network to ensure real-time sync
+    enableNetwork(db).catch(console.error);
+
     const q = query(
       collection(db, 'habits'),
-      where('userId', '==', userId)
+      where('userId', '==', userId),
+      orderBy('createdAt', 'desc')
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const habitsData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate(),
-      })) as Habit[];
+    const unsubscribe = onSnapshot(
+      q,
+      {
+        includeMetadataChanges: true,
+      },
+      (snapshot) => {
+        // Only process changes from server, not local cache
+        if (!snapshot.metadata.fromCache) {
+          const habitsData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+            createdAt: doc.data().createdAt?.toDate(),
+          })) as Habit[];
 
-      // Sort habits by createdAt in descending order on the client side
-      habitsData.sort((a, b) => {
-        if (!a.createdAt || !b.createdAt) return 0;
-        return b.createdAt.getTime() - a.createdAt.getTime();
-      });
-
-      setHabits(habitsData);
-      setLoading(false);
-    }, (error) => {
-      console.error('Error fetching habits:', error);
-      setLoading(false);
-      toast.error('Failed to load habits');
-    });
+          setHabits(habitsData);
+        }
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Error fetching habits:', error);
+        setLoading(false);
+        toast.error('Failed to load habits. Please refresh the page.');
+      }
+    );
 
     return unsubscribe;
   }, [userId]);
