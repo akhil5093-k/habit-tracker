@@ -3,7 +3,6 @@ import {
   collection,
   query,
   where,
-  orderBy,
   onSnapshot,
   addDoc,
   updateDoc,
@@ -27,8 +26,7 @@ export const useHabits = (userId: string | undefined) => {
 
     const q = query(
       collection(db, 'habits'),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', userId)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -37,6 +35,12 @@ export const useHabits = (userId: string | undefined) => {
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate(),
       })) as Habit[];
+
+      // Sort habits by createdAt in descending order on the client side
+      habitsData.sort((a, b) => {
+        if (!a.createdAt || !b.createdAt) return 0;
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      });
 
       setHabits(habitsData);
       setLoading(false);
