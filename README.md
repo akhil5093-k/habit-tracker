@@ -23,20 +23,22 @@ A beautiful, production-ready habit tracking application built with React, TypeS
 
 1. Create a new Firebase project at [Firebase Console](https://console.firebase.google.com/)
 2. Enable Authentication and Firestore Database
-3. Get your Firebase configuration from Project Settings
-4. Replace the config in `src/lib/firebase.ts` with your values:
+3. Get your Firebase configuration from Project Settings → General → Your apps → Firebase SDK snippet → Config
+4. Create a `.env` file in the root directory and add your Firebase configuration:
 
-```typescript
-const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
-};
+```env
+VITE_FIREBASE_API_KEY="your-api-key"
+VITE_FIREBASE_AUTH_DOMAIN="your-project.firebaseapp.com"
+VITE_FIREBASE_DATABASE_URL="https://your-project-default-rtdb.firebaseio.com/"
+VITE_FIREBASE_PROJECT_ID="your-project-id"
+VITE_FIREBASE_STORAGE_BUCKET="your-project.appspot.com"
+VITE_FIREBASE_MESSAGING_SENDER_ID="123456789"
+VITE_FIREBASE_APP_ID="1:123456789:web:abcdef123456"
+VITE_FIREBASE_MEASUREMENT_ID="G-ABCDEF1234"
 ```
 
+5. Replace the placeholder values with your actual Firebase configuration values
+6. Restart the development server after updating the `.env` file
 ## Database Structure
 
 ### Habits Collection
