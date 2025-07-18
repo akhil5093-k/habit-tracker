@@ -3,14 +3,14 @@ import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator, enableMultiTabIndexedDbPersistence } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBQmBvLylXmLbVZpwoupXlwluSlQXw30m0",
-  authDomain: "habit-tracking-40c4c.firebaseapp.com",
-  databaseURL: "https://habit-tracking-40c4c-default-rtdb.firebaseio.com",
-  projectId: "habit-tracking-40c4c",
-  storageBucket: "habit-tracking-40c4c.firebasestorage.app",
-  messagingSenderId: "1035057274604",
-  appId: "1:1035057274604:web:5dc5d19eb6d4a834180fc9",
-  measurementId: "G-WBVG9ZLF8E"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
