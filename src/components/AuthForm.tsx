@@ -24,7 +24,32 @@ const AuthForm: React.FC = () => {
         toast.success('Account created successfully!');
       }
     } catch (error: any) {
-      toast.error(error.message || 'Authentication failed');
+      let errorMessage = 'Authentication failed';
+      
+      switch (error.code) {
+        case 'auth/invalid-credential':
+          errorMessage = 'Invalid email or password. Please check your credentials.';
+          break;
+        case 'auth/user-not-found':
+          errorMessage = 'No account found with this email. Please sign up first.';
+          break;
+        case 'auth/wrong-password':
+          errorMessage = 'Incorrect password. Please try again.';
+          break;
+        case 'auth/email-already-in-use':
+          errorMessage = 'An account with this email already exists. Please sign in instead.';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'Password should be at least 6 characters long.';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Please enter a valid email address.';
+          break;
+        default:
+          errorMessage = error.message || 'Authentication failed';
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
