@@ -139,14 +139,21 @@ export const useHabits = (userId) => {
     if (!db || !userId) return;
 
     try {
-      const importPromises = habitsToImport.map(habitData => 
-        addDoc(collection(db, 'habits'), {
-          ...habitData,
+      const importPromises = habitsToImport.map(habitData => {
+        // Remove the id field and any undefined values
+        const { id, ...cleanHabitData } = habitData;
+        
+        // Filter out undefined values
+        const filteredData = Object.fromEntries(
+          Object.entries(cleanHabitData).filter(([_, value]) => value !== undefined)
+        );
+        
+        return addDoc(collection(db, 'habits'), {
+          ...filteredData,
           userId,
           createdAt: habitData.createdAt || new Date(),
-          id: undefined // Remove any existing ID to let Firestore generate new ones
-        })
-      );
+        });
+      });
 
       await Promise.all(importPromises);
       toast.success(`Successfully imported ${habitsToImport.length} habits!`);
