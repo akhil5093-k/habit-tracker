@@ -1,12 +1,12 @@
-export const formatDate = (date: Date): string => {
+export const formatDate = (date) => {
   return date.toISOString().split('T')[0];
 };
 
-export const getTodayString = (): string => {
+export const getTodayString = () => {
   return formatDate(new Date());
 };
 
-export const getWeekDates = (): string[] => {
+export const getWeekDates = () => {
   const today = new Date();
   const dates = [];
   
@@ -19,7 +19,7 @@ export const getWeekDates = (): string[] => {
   return dates;
 };
 
-export const calculateStreak = (completions: { date: string; completed: boolean }[]): number => {
+export const calculateStreak = (completions) => {
   const sortedCompletions = completions
     .filter(c => c.completed)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

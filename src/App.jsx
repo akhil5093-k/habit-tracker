@@ -1,8 +1,8 @@
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
-import { useAuth } from './hooks/useAuth';
-import AuthForm from './components/AuthForm';
-import Dashboard from './components/Dashboard';
+import { useAuth } from './hooks/useAuth.js';
+import AuthForm from './components/AuthForm.jsx';
+import Dashboard from './components/Dashboard.jsx';
 
 function App() {
   const { user, loading } = useAuth();

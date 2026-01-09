@@ -11,15 +11,21 @@ import {
   enableNetwork,
   disableNetwork,
 } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import { Habit } from '../types/habit';
+import { db } from '../lib/firebase.js';
 import toast from 'react-hot-toast';
 
-export const useHabits = (userId: string | undefined) => {
-  const [habits, setHabits] = useState<Habit[]>([]);
+export const useHabits = (userId) => {
+  const [habits, setHabits] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!db) {
+      // Firebase not configured
+      setHabits([]);
+      setLoading(false);
+      return;
+    }
+
     if (!userId) {
       setHabits([]);
       setLoading(false);
@@ -46,7 +52,7 @@ export const useHabits = (userId: string | undefined) => {
             id: doc.id,
             ...doc.data(),
             createdAt: doc.data().createdAt?.toDate(),
-          })) as Habit[];
+          }));
 
           // Sort habits by createdAt on the client side
           habitsData.sort((a, b) => {
@@ -68,8 +74,8 @@ export const useHabits = (userId: string | undefined) => {
     return unsubscribe;
   }, [userId]);
 
-  const addHabit = async (habitData: Omit<Habit, 'id' | 'createdAt' | 'userId' | 'completions'>) => {
-    if (!userId) return;
+  const addHabit = async (habitData) => {
+    if (!db || !userId) return;
 
     try {
       await addDoc(collection(db, 'habits'), {
@@ -85,7 +91,9 @@ export const useHabits = (userId: string | undefined) => {
     }
   };
 
-  const updateHabit = async (habitId: string, updates: Partial<Habit>) => {
+  const updateHabit = async (habitId, updates) => {
+    if (!db) return;
+
     try {
       const habitRef = doc(db, 'habits', habitId);
       await updateDoc(habitRef, updates);
@@ -96,7 +104,9 @@ export const useHabits = (userId: string | undefined) => {
     }
   };
 
-  const deleteHabit = async (habitId: string) => {
+  const deleteHabit = async (habitId) => {
+    if (!db) return;
+
     try {
       await deleteDoc(doc(db, 'habits', habitId));
       toast.success('Habit deleted successfully!');
@@ -106,7 +116,9 @@ export const useHabits = (userId: string | undefined) => {
     }
   };
 
-  const toggleHabitCompletion = async (habitId: string, date: string) => {
+  const toggleHabitCompletion = async (habitId, date) => {
+    if (!db) return;
+
     const habit = habits.find((h) => h.id === habitId);
     if (!habit) return;
 
@@ -123,6 +135,28 @@ export const useHabits = (userId: string | undefined) => {
     toast.success(isCompleted ? '🎉 Habit completed!' : 'Habit unmarked');
   };
 
+  const importHabits = async (habitsToImport) => {
+    if (!db || !userId) return;
+
+    try {
+      const importPromises = habitsToImport.map(habitData => 
+        addDoc(collection(db, 'habits'), {
+          ...habitData,
+          userId,
+          createdAt: habitData.createdAt || new Date(),
+          id: undefined // Remove any existing ID to let Firestore generate new ones
+        })
+      );
+
+      await Promise.all(importPromises);
+      toast.success(`Successfully imported ${habitsToImport.length} habits!`);
+    } catch (error) {
+      console.error('Error importing habits:', error);
+      toast.error('Failed to import habits');
+      throw error;
+    }
+  };
+
   return {
     habits,
     loading,
@@ -130,5 +164,6 @@ export const useHabits = (userId: string | undefined) => {
     updateHabit,
     deleteHabit,
     toggleHabitCompletion,
+    importHabits,
   };
 };
