@@ -129,14 +129,15 @@ const HabitCard = ({
           </div>
 
           {/* Week Calendar */}
-          <div className="flex gap-1">
+          <div className="flex flex-col gap-1">
             {weekDates.map((date, index) => {
               const isCompleted = isCompletedOnDate(date);
               const isToday = date === today;
+              const dayName = new Date(date).toLocaleDateString('en', { weekday: 'short' });
               return (
                 <div
                   key={date}
-                  className={`flex-1 h-8 rounded-md border-2 transition-colors relative ${
+                  className={`flex items-center gap-2 h-8 rounded-md border-2 transition-colors relative ${
                     isCompleted
                       ? `bg-gradient-to-r ${category.color} border-transparent`
                       : isToday
@@ -145,14 +146,17 @@ const HabitCard = ({
                   }`}
                   title={`${new Date(date).toLocaleDateString()} ${isCompleted ? '✓' : ''}`}
                 >
-                  {isCompleted && (
-                    <div className="w-full h-full flex items-center justify-center">
+                  <div className="px-2 text-xs font-medium text-gray-600 dark:text-gray-400 min-w-[32px]">
+                    {dayName}
+                  </div>
+                  <div className="flex-1 flex items-center justify-center">
+                    {isCompleted && (
                       <CheckCircle className="h-4 w-4 text-white" />
-                    </div>
-                  )}
-                  {isToday && !isCompleted && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  )}
+                    )}
+                    {isToday && !isCompleted && (
+                      <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                    )}
+                  </div>
                 </div>
               );
             })}

@@ -128,20 +128,23 @@ const Statistics = ({ habits }) => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Weekly Progress</h3>
           <BarChart3 className="h-5 w-5 text-gray-400 dark:text-gray-500" />
         </div>
-        <div className="space-y-3">
+        <div className="flex items-end justify-center gap-4 h-48">
           {weeklyProgress.map((day, index) => (
-            <div key={day.date} className="flex items-center gap-3">
-              <div className="w-12 text-xs text-gray-600 dark:text-gray-400">
-                {new Date(day.date).toLocaleDateString('en', { weekday: 'short' })}
+            <div key={day.date} className="flex flex-col items-center gap-2 flex-1">
+              <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                {day.completed}/{day.total}
               </div>
-              <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3 relative overflow-hidden">
+              <div className="flex flex-col justify-end h-32 w-8 bg-gray-200 dark:bg-gray-700 rounded-t-lg relative overflow-hidden">
                 <div 
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-full rounded-full transition-all duration-500"
-                  style={{ width: `${day.percentage}%` }}
+                  className="bg-gradient-to-t from-blue-500 to-purple-500 w-full rounded-t-lg transition-all duration-500"
+                  style={{ height: `${day.percentage}%` }}
                 />
               </div>
-              <div className="w-16 text-xs text-gray-600 dark:text-gray-400 text-right">
-                {day.completed}/{day.total} ({day.percentage}%)
+              <div className="text-xs text-gray-600 dark:text-gray-400 text-center">
+                {new Date(day.date).toLocaleDateString('en', { weekday: 'short' })}
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-500">
+                {day.percentage}%
               </div>
             </div>
           ))}

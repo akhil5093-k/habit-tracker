@@ -60,15 +60,18 @@ const DataManager = ({ habits, onImportHabits }) => {
           throw new Error('No valid habits found in the file');
         }
 
-        // Convert dates back to Date objects
-        const processedHabits = validHabits.map(habit => ({
-          ...habit,
-          createdAt: habit.createdAt ? new Date(habit.createdAt) : new Date(),
-          category: habit.category || 'other',
-          goal: habit.goal || 1,
-          unit: habit.unit || 'times',
-          completions: habit.completions || []
-        }));
+        // Convert dates back to Date objects and remove id field
+        const processedHabits = validHabits.map(habit => {
+          const { id, ...habitWithoutId } = habit;
+          return {
+            ...habitWithoutId,
+            createdAt: habit.createdAt ? new Date(habit.createdAt) : new Date(),
+            category: habit.category || 'other',
+            goal: habit.goal || 1,
+            unit: habit.unit || 'times',
+            completions: habit.completions || []
+          };
+        });
 
         await onImportHabits(processedHabits);
         toast.success(`Successfully imported ${processedHabits.length} habits!`);
